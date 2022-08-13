@@ -1,14 +1,14 @@
 import os
-SECRET_KEY = os.urandom(32)
-# Grabs the folder where the script runs.
+
+SECRET_KEY = os.urandom(38)
+
+# Gets the folder within which the script is
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# Enable debug mode.
+# Set debug mode active
 DEBUG = True
 
 # Connect to the database
-
-
 SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@localhost:5432/fyyur'
 
 # remove console warning

@@ -1,57 +1,56 @@
-#----------------------------------------------------------------------------#
-# Imports
-#----------------------------------------------------------------------------#
+#*************Imports************#
 
+from flask import Flask, render_template, request, Response, flash, redirect, url_for
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from models import *
-#----------------------------------------------------------------------------#
-# Filters.
-#----------------------------------------------------------------------------#
 
-def format_datetime(value, format='medium'):
+
+# The function below formats date picks
+
+def date_time_format(value, format='medium'):
+  # Let
   date = dateutil.parser.parse(value)
+   # Condition
   if format == 'full':
       format="EEEE MMMM, d, y 'at' h:mma"
   elif format == 'medium':
       format="EE MM, dd, y h:mma"
   return babel.dates.format_datetime(date, format)
 
-app.jinja_env.filters['datetime'] = format_datetime
+app.jinja_env.filters['datetime'] = date_time_format
 
-#----------------------------------------------------------------------------#
-# Controllers.
-#----------------------------------------------------------------------------#
 
+#*************Controllers*************#
+
+# Home route
 @app.route('/')
 def index():
   return render_template('pages/home.html')
 
 
-#  Venues
-#  ----------------------------------------------------------------
+#  Venues route
 
 @app.route('/venues')
 def venues():
   data = []
   
-  # get all venues
+  # Quiry to retrieve all venues
   venues = Venue.query.all()
 
-  # Use set so there are no duplicate venues
+  # Use set to avoid retrieving duplicate venues
   locations = set()
 
   for venue in venues:
-      # add city/state tuples
+      # add city and state records(tuples)
     locations.add((venue.city, venue.state))
 
-  # for each unique city/state, add venues
+  # Loop over each city and state and retrieve venues
   for location in locations:
     data.append({
         "city": location[0],
@@ -60,23 +59,23 @@ def venues():
     })
 
   for venue in venues:
-    num_upcoming_shows = 0
-
+    # Set initial coming show to 0
+    number_of_coming_shows = 0
+    # Retrieve all shows
     shows = Show.query.filter_by(venue_id=venue.id).all()
-
-    # get current date to filter num_upcoming_shows
-    current_date = datetime.now()
-
+    # get current date to filter number_of_coming_shows
+    date_now = datetime.now()
+    # Loop through shows
     for show in shows:
-      if show.start_time > current_date:
-          num_upcoming_shows += 1
+      if show.start_time > date_now:
+          number_of_coming_shows += 1
 
     for venue_location in data:
       if venue.state == venue_location['state'] and venue.city == venue_location['city']:
         venue_location['venues'].append({
             "id": venue.id,
             "name": venue.name,
-            "num_upcoming_shows": num_upcoming_shows
+            "num_upcoming_shows": number_of_coming_shows
         })
   return render_template('pages/venues.html', areas=data)
 
@@ -105,7 +104,7 @@ def show_venue(venue_id):
           "artist_id": show.artist_id,
           "artist_name": show.artist.name,
            "artist_image_link": show.artist.image_link,
-           "start_time": format_datetime(str(show.start_time))
+           "start_time": date_time_format(str(show.start_time))
         }
     if show.start_time > current_time:
       upcoming_shows.append(data)
@@ -228,7 +227,7 @@ def show_artist(artist_id):
           "venue_id": show.venue_id,
           "venue_name": show.venue.name,
           "venue_image_link": show.venue.image_link,
-          "start_time": format_datetime(str(show.start_time))
+          "start_time": date_time_format(str(show.start_time))
         }
     if show.start_time > current_time:
       upcoming_shows.append(data)
@@ -415,7 +414,7 @@ def shows():
         "artist_id": show.artist_id,
         "artist_name": show.artist.name,
         "artist_image_link": show.artist.image_link,
-        "start_time": format_datetime(str(show.start_time))
+        "start_time": date_time_format(str(show.start_time))
     })
 
   return render_template('pages/shows.html', shows=data)

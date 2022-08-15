@@ -1,9 +1,12 @@
+#********* Main Library Imports *******#
+
 from datetime import datetime
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField 
 from wtforms.validators import DataRequired, AnyOf, URL
 
-class ShowForm(Form):
+#********* Shows Form Class *******#
+class Show_Form(Form):
     artist_id = StringField(
         'artist_id'
     )
@@ -16,14 +19,15 @@ class ShowForm(Form):
         default= datetime.today()
     )
 
-class VenueForm(Form):
-    name = StringField(
+#********* Venue Form Class *******#
+class Venue_Form(Form):
+    venue_name = StringField(
         'name', validators=[DataRequired()]
     )
-    city = StringField(
+    venue_city = StringField(
         'city', validators=[DataRequired()]
     )
-    state = SelectField(
+    venue_state = SelectField(
         'state', validators=[DataRequired()],
         choices=[
             ('AL', 'AL'),
@@ -79,16 +83,16 @@ class VenueForm(Form):
             ('WY', 'WY'),
         ]
     )
-    address = StringField(
+    venue_address = StringField(
         'address', validators=[DataRequired()]
     )
-    phone = StringField(
+    venue_phone = StringField(
         'phone'
     )
-    image_link = StringField(
+    venue_image_link = StringField(
         'image_link'
     )
-    genres = SelectMultipleField(
+    venue_genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
@@ -112,25 +116,26 @@ class VenueForm(Form):
             ('Other', 'Other'),
         ]
     )
-    facebook_link = StringField(
+    venue_facebook_link = StringField(
         'facebook_link', validators=[URL()]
     )
-    website = StringField(
+    venue_website = StringField(
         'website', validators=[URL()]
     )
-    seeking_talent = BooleanField('seeking_talent')
-    seeking_description = StringField(
+    venue_seeking_talent = BooleanField('seeking_talent')
+    venue_seeking_description = StringField(
         'seeking_description'
     )
 
-class ArtistForm(Form):
-    name = StringField(
+#********* Artist Form Class *******#
+class Artist_Form(Form):
+    artist_name = StringField(
         'name', validators=[DataRequired()]
     )
-    city = StringField(
+    artist_city = StringField(
         'city', validators=[DataRequired()]
     )
-    state = SelectField(
+    artist_state = SelectField(
         'state', validators=[DataRequired()],
         choices=[
             ('AL', 'AL'),
@@ -186,13 +191,13 @@ class ArtistForm(Form):
             ('WY', 'WY'),
         ]
     )
-    phone = StringField(
+    artist_phone = StringField(
         'phone'
     )
-    image_link = StringField(
+    artist_image_link = StringField(
         'image_link'
     )
-    genres = SelectMultipleField(
+    artist_genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
@@ -216,7 +221,7 @@ class ArtistForm(Form):
             ('Other', 'Other'),
         ]
     )
-    facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+    artist_facebook_link = StringField(
+        'artist_facebook_link', validators=[URL()]
     )
 

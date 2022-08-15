@@ -1,4 +1,4 @@
-#**********Imported Libraries*********#
+#************* Imported Libraries *************#
 
 from flask import Flask
 from flask_migrate import Migrate
@@ -6,16 +6,17 @@ from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-#*******Application Configuration******#
+#*********** Application Configuration **********#
 app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
 
-#************Table Models***********#
 
-#*********Venues table models********#
+#**************** Table Models ******************#
+
+#**************** Venues table models ***********#
 class Venue_table(db.Model):
     __tablename__ = 'Venue_table'
 
@@ -36,7 +37,7 @@ class Venue_table(db.Model):
     def __repr__(self):
       return f'<Venue: {self.id} name: {self.venue_name}>'
 
-#*********Artist table models********#
+#**************** Artist table models **************#
 class Artist_table(db.Model):
     __tablename__ = 'Artist_table'
 
@@ -53,7 +54,7 @@ class Artist_table(db.Model):
     def __repr__(self):
       return f'<Artist {self.id} name: {self.artist_name}>'
 
-#*********Shows table models********#
+#***************** Shows table models ***************#
 class Show_table(db.Model):
     __tablename__ = 'Show_table'
 

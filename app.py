@@ -1,6 +1,8 @@
-#*************Imports************#
+#*****************************************************#
+#****************** Library Imports  *****************#
+#*****************************************************#
 
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, response, flash, redirect, url_for
 import json
 import dateutil.parser
 import babel
@@ -11,7 +13,7 @@ from forms import *
 from models import *
 
 
-# The function below formats date picks
+#******** The function below formats date picks *******#
 
 def date_time_format(value, format='medium'):
   # Let
@@ -25,23 +27,24 @@ def date_time_format(value, format='medium'):
 
 app.jinja_env.filters['datetime'] = date_time_format
 
+#*****************************************************#
+#*********** Controllers Updates Routes **************#
+#*****************************************************#
 
-#*************Controllers*************#
 
-# Home route
+#********************* Home route ********************#
 @app.route('/')
 def index():
   return render_template('pages/home.html')
 
 
 #  Venues route
-
 @app.route('/venues')
 def venues():
   data = []
   
-  # Quiry to retrieve all venues
-  venues = Venue.query.all()
+  # Query to retrieve all venues
+  venues = Venue_table.query.all()
 
   # Use set to avoid retrieving duplicate venues
   locations = set()
@@ -62,7 +65,7 @@ def venues():
     # Set initial coming show to 0
     number_of_coming_shows = 0
     # Retrieve all shows
-    shows = Show.query.filter_by(venue_id=venue.id).all()
+    shows = Show_table.query.filter_by(venue_id=venue.id).all()
     # get current date to filter number_of_coming_shows
     date_now = datetime.now()
     # Loop through shows
@@ -82,7 +85,7 @@ def venues():
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
   search_term = request.form.get('search_term', '')
-  result = Venue.query.filter(Venue.name.ilike(f'%{search_term}%'))
+  result = Venue_table.query.filter(Venue_table.name.ilike(f'%{search_term}%'))
 
   response={
     "count": result.count(),
@@ -93,8 +96,8 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
-  venue = Venue.query.get(venue_id)
-  shows = Show.query.filter_by(venue_id=venue_id).all()
+  venue = Venue_table.query.get(venue_id)
+  shows = Show_table.query.filter_by(venue_id=venue_id).all()
   past_shows = []
   upcoming_shows = []
   current_time = datetime.now()
@@ -132,20 +135,19 @@ def show_venue(venue_id):
 
   return render_template('pages/show_venue.html', venue=data)
 
-#  Create Venue
-#  ----------------------------------------------------------------
+#***************** Create Venue *******************#
 
 @app.route('/venues/create', methods=['GET'])
 def create_venue_form():
-  form = VenueForm()
+  form = Venue_Form()
   return render_template('forms/new_venue.html', form=form)
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   try:
     # get form data and create 
-    form = VenueForm()
-    venue = Venue(name=form.name.data, city=form.city.data, state=form.state.data, address=form.address.data,
+    form = Venue_Form()
+    venue = Venue_table(name=form.name.data, city=form.city.data, state=form.state.data, address=form.address.data,
                   phone=form.phone.data, image_link=form.image_link.data,genres=form.genres.data, 
                   facebook_link=form.facebook_link.data, seeking_description=form.seeking_description.data,
                   website=form.website.data, seeking_talent=form.seeking_talent.data)
@@ -169,7 +171,7 @@ def create_venue_submission():
 def delete_venue(venue_id):
   try:
     # Get venue by ID
-    venue = Venue.query.get(venue_id)
+    venue = Venue_table.query.get(venue_id)
     venue_name = venue.name
 
     db.session.delete(venue)
@@ -184,13 +186,13 @@ def delete_venue(venue_id):
 
   return redirect(url_for('index'))
 
-#  Artists
-#  ----------------------------------------------------------------
+#**********************  Artists **********************#
+ 
 @app.route('/artists')
 def artists():
   data = []
 
-  artists = Artist.query.all()
+  artists = Artist_table.query.all()
 
   for artist in artists:
     data.append({
@@ -203,8 +205,8 @@ def artists():
 def search_artists():
   search_term = request.form.get('search_term', '')
 
-  # filter artists by case insensitive search
-  result = Artist.query.filter(Artist.name.ilike(f'%{search_term}%'))
+  # Case insensitive search by filter of artists
+  result = Artist_table.query.filter(Artist_table.name.ilike(f'%{search_term}%'))
 
   response={
     "count": result.count(),
@@ -215,13 +217,13 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  artist = Artist.query.get(artist_id)
-  shows = Show.query.filter_by(artist_id=artist_id).all()
+  artist = Artist_table.query.get(artist_id)
+  shows = Show_table.query.filter_by(artist_id=artist_id).all()
   past_shows = []
   upcoming_shows = []
   current_time = datetime.now()
 
-  # Filter shows by upcoming and past
+  # Filter shows by upcoming and past shows
   for show in shows:
     data = {
           "venue_id": show.venue_id,
@@ -251,13 +253,17 @@ def show_artist(artist_id):
 
   return render_template('pages/show_artist.html', artist=data)
 
-#  Update
-#  ----------------------------------------------------------------
+#*****************************************************#
+#************* Record Updates Routes *****************#
+#*****************************************************#
+
+
+#************* Artist updates routes *****************#
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
-  form = ArtistForm()
+  form = Artist_Form()
 
-  artist = Artist.query.get(artist_id)
+  artist = Artist_table.query.get(artist_id)
 
   artist_data = {
         "id": artist.id,
@@ -275,11 +281,9 @@ def edit_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
   try:
-    form = ArtistForm()
+    form = Artist_Form()
 
-    artist = Artist.query.get(artist_id)
-
-    artist.name = form.name.data
+    artist = Artist_table.query.get(artist_id)
 
     artist.name = form.name.data
     artist.phone = form.phone.data
@@ -290,7 +294,7 @@ def edit_artist_submission(artist_id):
     artist.facebook_link = form.facebook_link.data
     
     db.session.commit()
-    flash('The Artist ' + request.form['name'] + ' has been successfully updated!')
+    flash( request.form['name'] + ' Record has been successfully updated!')
   except:
     db.session.rolback()
     flash('An Error has occured and the update unsuccessful')
@@ -300,9 +304,10 @@ def edit_artist_submission(artist_id):
   return redirect(url_for('show_artist', artist_id=artist_id))
 
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
+
 def edit_venue(venue_id):
-  form = VenueForm()
-  venue = Venue.query.get(venue_id)
+  form = Venue_Form()
+  venue = Venue_table.query.get(venue_id)
   venue={
     "id": venue.id,
     "name": venue.name,
@@ -323,9 +328,9 @@ def edit_venue(venue_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
   try:
-    form = VenueForm()
-    venue = Venue.query.get(venue_id)
-    name = form.name.data
+    form = Venue_Form()
+    venue = Venue_table.query.get(venue_id)
+    name = form.venue_name.data
 
     venue.name = name
     venue.genres = form.genres.data
@@ -349,22 +354,20 @@ def edit_venue_submission(venue_id):
 
   return redirect(url_for('show_venue', venue_id=venue_id))
 
-#  Create Artist
-#  ----------------------------------------------------------------
-
+#******************* Create Artist ********************#
 @app.route('/artists/create', methods=['GET'])
 def create_artist_form():
-  form = ArtistForm()
+  form = Artist_Form()
   return render_template('forms/new_artist.html', form=form)
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
   try:
-    form = ArtistForm()
+    form = Artist_Form()
 
-    artist = Artist(name=form.name.data, city=form.city.data, state=form.city.data,
-                    phone=form.phone.data, genres=form.genres.data, 
-                    image_link=form.image_link.data, facebook_link=form.facebook_link.data)
+    artist = Artist_table(name=form.artist_name.data, city=form.artist_city.data, state=form.artist_state.data,
+                    phone=form.artist_phone.data, genres=form.artist_genres.data, 
+                    image_link=form.artist_image_link.data, facebook_link=form.artist_facebook_link.data)
     
     db.session.add(artist)
     db.session.commit()
@@ -383,7 +386,7 @@ def create_artist_submission():
 def delete_artist(artist_id):
   try:
 
-    artist = Artist.query.get(artist_id)
+    artist = Artist_table.query.get(artist_id)
     artist_name = artist.name
 
     db.session.delete(artist)
@@ -398,12 +401,10 @@ def delete_artist(artist_id):
 
   return redirect(url_for('index'))
 
-#  Shows
-#  ----------------------------------------------------------------
-
+#********************  Shows ***********************#
 @app.route('/shows')
 def shows():
-  shows = Show.query.order_by(db.desc(Show.start_time))
+  shows = Show_table.query.order_by(db.desc(Show_table.start_time))
 
   data = []
 
@@ -422,7 +423,7 @@ def shows():
 @app.route('/shows/create')
 def create_shows():
   # renders form
-  form = ShowForm()
+  form = Show_Form()
   return render_template('forms/new_show.html', form=form)
 
 @app.route('/shows/create', methods=['POST'])

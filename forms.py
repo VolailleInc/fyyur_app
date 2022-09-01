@@ -13,7 +13,7 @@ class Show_Form(Form):
     venue_id = StringField(
         'venue_id'
     )
-    start_time = DateTimeField(
+    show_start_time = DateTimeField(
         'start_time',
         validators=[DataRequired()],
         default= datetime.today()
@@ -21,14 +21,18 @@ class Show_Form(Form):
 
 #********* Venue Form Class *******#
 class Venue_Form(Form):
+    venue_id=StringField('venue_id')
     venue_name = StringField(
-        'name', validators=[DataRequired()]
+        'venue_name', validators=[DataRequired()]
+    )
+    venue_address = StringField(
+        'venue_address', validators=[DataRequired()]
     )
     venue_city = StringField(
-        'city', validators=[DataRequired()]
+        'venue_city', validators=[DataRequired()]
     )
     venue_state = SelectField(
-        'state', validators=[DataRequired()],
+        'venue_state', validators=[DataRequired()],
         choices=[
             ('AL', 'AL'),
             ('AK', 'AK'),
@@ -83,17 +87,15 @@ class Venue_Form(Form):
             ('WY', 'WY'),
         ]
     )
-    venue_address = StringField(
-        'address', validators=[DataRequired()]
-    )
+   
     venue_phone = StringField(
-        'phone'
+        'venue_phone'
     )
     venue_image_link = StringField(
-        'image_link'
+        'venue_image_link'
     )
-    venue_genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
+    genres_at_venue = SelectMultipleField(
+        'genres_at_venue', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
             ('Blues', 'Blues'),
@@ -117,26 +119,26 @@ class Venue_Form(Form):
         ]
     )
     venue_facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'venue_facebook_link', validators=[URL()]
     )
     venue_website = StringField(
-        'website', validators=[URL()]
+        'venue_website', validators=[URL()]
     )
     venue_seeking_talent = BooleanField('seeking_talent')
     venue_seeking_description = StringField(
-        'seeking_description'
+        'venue_seeking_description'
     )
 
 #********* Artist Form Class *******#
 class Artist_Form(Form):
     artist_name = StringField(
-        'name', validators=[DataRequired()]
+        'artist_name', validators=[DataRequired()]
     )
     artist_city = StringField(
-        'city', validators=[DataRequired()]
+        'artist_city', validators=[DataRequired()]
     )
     artist_state = SelectField(
-        'state', validators=[DataRequired()],
+        'artist_state', validators=[DataRequired()],
         choices=[
             ('AL', 'AL'),
             ('AK', 'AK'),
@@ -192,13 +194,13 @@ class Artist_Form(Form):
         ]
     )
     artist_phone = StringField(
-        'phone'
+        'artist_phone'
     )
     artist_image_link = StringField(
-        'image_link'
+        'artist_image_link'
     )
     artist_genres = SelectMultipleField(
-        'genres', validators=[DataRequired()],
+        'artist_genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
             ('Blues', 'Blues'),
